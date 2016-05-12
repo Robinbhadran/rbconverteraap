@@ -2,15 +2,11 @@ class PostAttachmentsController < ApplicationController
   before_action :set_post_attachment, only: [:show, :edit, :update, :destroy]
   before_action :authenticate_user!
 
-
-
   # GET /post_attachments
   # GET /post_attachments.json
   def index
-   # @post_attachments = PostAttachment.all.paginate(page: params[:page], per_page: 5)
-   @post_attachments = current_user.post_attachments.paginate(page: params[:page], per_page: 5)
-
-   @post_attachment = PostAttachment.new
+    @post_attachments = PostAttachment.all.paginate(page: params[:page], per_page: 5)
+    @post_attachment = PostAttachment.new
   end
 
   # GET /post_attachments/1
@@ -32,19 +28,24 @@ class PostAttachmentsController < ApplicationController
   # POST /post_attachments.json
   def create
     @post_attachment = PostAttachment.new(post_attachment_params)
-    
-    
 
-    @post_attachment.user_id = current_user.id
     respond_to do |format|
-
       if @post_attachment.save
         if params[:post_attachment][:convert_t] == "usfm_to_tab"
           PostAttachment.converter(@post_attachment)
-        else params[:post_attachment][:convert_t] == "text_to_usfm"
-          PostAttachment.text_to_usfm(@post_attachment)
-        end
-      format.html { redirect_to @post_attachment, notice: 'Post attachment was successfully created.' }
+       
+      elsif params [:post_attachment][:convert_t] == "text_to_usfm"
+          PostAttachment.converter(@post_attachment)
+        else
+          print "Variable is something else"
+end
+       
+ 
+        
+
+          
+
+        format.html { redirect_to @post_attachment, notice: 'Post attachment was successfully created.' }
         format.json { render :show, status: :created, location: @post_attachment }
       else
         format.html { render :new }
@@ -86,10 +87,13 @@ class PostAttachmentsController < ApplicationController
     @post_attachment = PostAttachment.find(params[:id])
     send_file "#{Rails.public_path}/output_folder/#{@post_attachment.id.to_s}/#{File.basename(@post_attachment.avatar.url, '.*')}.txt", :x_sendfile=>true
   end
- 
 
-  
- protected
+   def p_download
+    @post_attachment = PostAttachment.find(params[:id])
+    send_file "#{Rails.public_path}/output_folder/#{@post_attachment.id.to_s}/#{File.basename(@post_attachment.avatar.url, '.*')}.usfm", :x_sendfile=>true
+  end
+   
+   protected
     def add_user
       PostAttachment.create!(:user_id => current_user.id)
     end
@@ -105,4 +109,4 @@ class PostAttachmentsController < ApplicationController
     def post_attachment_params
       params.require(:post_attachment).permit(:convert_t, :post_id, :avatar, :user_id)
     end
-end 
+end

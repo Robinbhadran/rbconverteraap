@@ -17,11 +17,8 @@ development:
 production:
   adapter: postgresql
   encoding: unicode
-  # For details on connection pooling, see rails configuration guide
-  # http://guides.rubyonrails.org/configuring.html#database-pooling
+  database: myapp_production
   pool: 5
-  database: fileconverterapp_production
-  pool: 5
-  username: converterapp
+  username: myapp
   password:
 
