@@ -49,4 +49,4 @@ gem 'carrierwave'
 gem 'devise'
 
 
-ruby "2.0.0"
+#ruby "2.0.0"
